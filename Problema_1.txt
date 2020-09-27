@@ -1,0 +1,13 @@
+MOV B,0
+MOV A,(B)
+AND A,1
+ADD B,1
+CMP A,1
+JEQ #01
+MOV A,(#0F)
+ADD A,1
+MOV (#0F),A
+CMP B,#07
+JEQ #0C
+JMP #01
+MOV A,(#0F)
