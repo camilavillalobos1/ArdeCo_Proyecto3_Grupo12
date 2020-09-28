@@ -57,10 +57,10 @@ for idx, linea in enumerate(Lineas):
             print("Error en la linea {}: {} \tError de sintaxis, {} solo recibe un parametro.".format(idx + 1, linea, line[0]))
             filecheck = False
 
-    elif line[0] == "NOT" or line[0] == "SHR" or line[0] == "SHL" or line[0] == "INC" or line[0] == "RST":
-        if line[1][0] != "(":
-            print("Error en la linea {}: {} \tOperacion no valida'".format(idx + 1,linea,line[0]))
-            filecheck = False
+    # elif line[0] == "NOT" or line[0] == "SHR" or line[0] == "SHL" or line[0] == "INC" or line[0] == "RST":
+    #     if line[1][0] != "(":
+    #         print("Error en la linea {}: {} \tOperacion no valida'".format(idx + 1,linea,line[0]))
+    #         filecheck = False
 
         if "," in line[1]:
             print("Error en la linea {}: {} \tError de sintaxis, {} solo recibe un parametro.".format(idx + 1, linea, line[0]))
@@ -71,7 +71,7 @@ for idx, linea in enumerate(Lineas):
             print("Error en la linea {}: {} \tOperacion no soportada.".format(idx + 1, linea, line[0]))
             filecheck = False
 
-    elif operacion == "NOT":
+    elif operation == "NOT":
         if secondoperand in numeros or (firstoperand[0] == "(" and secondoperand == "") or secondoperand[0] == "(":
             print("Error en la linea {}: {} \tOperacion no soportada.".format(idx + 1, linea, line[0]))
             filecheck = False
@@ -81,10 +81,22 @@ for idx, linea in enumerate(Lineas):
             print("Error en la linea {}: {} \tOperacion no soportada.".format(idx + 1, linea, line[0]))
             filecheck = False
 
-    elif operation == "SHL":
+    elif operation == "SHL" or operation == "SHR":
         if secondoperand[0] == "(" or secondoperand in numeros or (firstoperand[0] == "(" and (firstoperand[1] in numeros or secondoperand != "")) or firstoperand == "(A)":
             print("Error en la linea {}: {} \tOperacion no soportada.".format(idx + 1, linea, line[0]))
             filecheck = False
+            
+    elif operation == "INC" or operation == "RST":
+        if firstoperand[0] != "(" or firstoperand == "(A)" or firstoperand in numeros or firstoperand == "A":
+            print("Error en la linea {}: {} \tOperacion no soportada.".format(idx + 1, linea, line[0]))
+            filecheck = False
+            
+    elif operation == "CMP":
+        if firstoperand[0] == "(" or secondoperand == "A" or secondoperand == "(A)" or line[1] in listaMov:
+            print("Error en la linea {}: {} \tOperacion no soportada.".format(idx + 1, linea, line[0]))
+            filecheck = False
+        
+        
 
 if filecheck == False:
     print("\nError: Uno o más errores encontrados a la hora de compilar")
