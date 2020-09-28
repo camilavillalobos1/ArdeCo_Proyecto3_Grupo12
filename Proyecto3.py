@@ -66,9 +66,27 @@ for idx, linea in enumerate(Lineas):
             print("Error en la linea {}: {} \tError de sintaxis, {} solo recibe un parametro.".format(idx + 1, linea, line[0]))
             filecheck = False
 
+    elif operation == "OR":
+        if secondoperand in listaMov or secondoperand[0] == "(A)" or (firstoperand[0] == "(" and secondoperand != ""):
+            print("Error en la linea {}: {} \tOperacion no soportada.".format(idx + 1, linea, line[0]))
+            filecheck = False
+
+    elif operacion == "NOT":
+        if secondoperand in numeros or (firstoperand[0] == "(" and secondoperand == "") or secondoperand[0] == "(":
+            print("Error en la linea {}: {} \tOperacion no soportada.".format(idx + 1, linea, line[0]))
+            filecheck = False
+
+    elif operation == "XOR":
+        if line[1] in listaMov or (firstoperand[0] == "(" and secondoperand != ""):
+            print("Error en la linea {}: {} \tOperacion no soportada.".format(idx + 1, linea, line[0]))
+            filecheck = False
+
+    elif operation == "SHL":
+        if secondoperand[0] == "(" or secondoperand in numeros or (firstoperand[0] == "(" and (firstoperand[1] in numeros or secondoperand != "")) or firstoperand == "(A)":
+            print("Error en la linea {}: {} \tOperacion no soportada.".format(idx + 1, linea, line[0]))
+            filecheck = False
+
 if filecheck == False:
     print("\nError: Uno o más errores encontrados a la hora de compilar")
-
-
 
 file.close()
