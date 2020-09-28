@@ -82,6 +82,7 @@ for idx, linea in enumerate(Lineas):
             filecheck = False
 
     elif operation == "SHL" or operation == "SHR":
+<<<<<<< HEAD
         if secondoperand[0] == "(" or (secondoperand in numeros) or (firstoperand[0] == "(" and secondoperand != "") or firstoperand == "(A)":
             print("Error en la linea {}: {} \tOperacion no soportada.".format(idx + 1, linea, line[0]))
             filecheck = False
@@ -99,8 +100,23 @@ for idx, linea in enumerate(Lineas):
 
     elif operation == "CMP":
         if firstoperand[0] == "(" or secondoperand == "A" or secondoperand == "(A)" or line[1] in listaMov:
+=======
+        if secondoperand[0] == "(" or secondoperand in numeros or (firstoperand[0] == "(" and (firstoperand[1] in numeros or secondoperand != "")) or firstoperand == "(A)":
+>>>>>>> 19916b24220ee1b898eea6c533f3e47bff594392
             print("Error en la linea {}: {} \tOperacion no soportada.".format(idx + 1, linea, line[0]))
             filecheck = False
+            
+    elif operation == "INC" or operation == "RST":
+        if firstoperand[0] != "(" or firstoperand == "(A)" or firstoperand in numeros or firstoperand == "A":
+            print("Error en la linea {}: {} \tOperacion no soportada.".format(idx + 1, linea, line[0]))
+            filecheck = False
+            
+    elif operation == "CMP":
+        if firstoperand[0] == "(" or secondoperand == "A" or secondoperand == "(A)" or line[1] in listaMov:
+            print("Error en la linea {}: {} \tOperacion no soportada.".format(idx + 1, linea, line[0]))
+            filecheck = False
+        
+        
 
 
 
