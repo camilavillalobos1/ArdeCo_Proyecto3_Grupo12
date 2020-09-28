@@ -7,9 +7,12 @@ except IOError:
 Lineas = file.readlines()
 instructions = ["CMP", "JEQ", "JMP","JNE", "JGT", "JLT", "JGE", "JLE", "JCR", "JOV" , "MOV", "SUB", "ADD", "AND", "OR",
                 "NOT", "XOR", "SHL", "SHR", "INC", "RST"]
-instructions1 =  ["NOT","SHL", "SHR", "INC", "RST"]
-numeros = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
+instructions1 = ["NOT","SHL", "SHR", "INC", "RST"]
+notDoubles = ["MOV", "CMP"]
+numeros = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9","#00","#01","#03","#04","#05","#06","#07","#08","#09",
+           "#0A","#0B","#0C","#0D","#0E","#0F"]
 listaMov = ["(A),B", "A,(A)", "A,A", "B,B"]
+
 filecheck =True
 for idx, linea in enumerate(Lineas):
     line = linea.split()
@@ -21,7 +24,7 @@ for idx, linea in enumerate(Lineas):
     if "," in line[1]:
         firstoperand = (line[1].split(","))[0]
         secondoperand = (line[1].split(","))[1]
-    print(operation, firstoperand,secondoperand)
+    print(operation, firstoperand, secondoperand)
 
     for a in numeros:  # Para que ninguna instruccion empiece con un literal
         if line[1][0] == a and line[0][0] != "J":
@@ -35,6 +38,14 @@ for idx, linea in enumerate(Lineas):
 
     if (secondoperand == "" and firstoperand == "A") or (secondoperand == "" and firstoperand == "A") and operation != "INC":
         print("Error en la linea {}: {} \t{} no es una instruccion valida".format(idx + 1, linea, line[0]))
+        filecheck = False
+
+    if ((operation in notDoubles) and (secondoperand == "")):
+        print("Error en la linea {}: {} \t{} debe recibir 2 parametros.".format(idx + 1, linea, line[0]))
+        filecheck = False
+
+    if (operation not in notDoubles and (operation != "INC") and (firstoperand[0] != "(" and secondoperand == "")):
+        print("Error en la linea {}: {} \tCuando {} recibe 1 parametro este debe ser una direccion.".format(idx + 1, linea, line[0]))
         filecheck = False
 
     if firstoperand[0] == "(" and secondoperand == "(":
@@ -61,8 +72,8 @@ for idx, linea in enumerate(Lineas):
             print("Error en la linea {}: {} \tOperacion no soportada".format(idx + 1, linea,line[0]))
             filecheck = False
 
-    if line[0] == "MOV":
-        if line[1][0] == "(" and (line[1].split(","))[0] == "(A)":
+    if line[0] in instructions: #Antes era MOV pero segun yo ninguna intruccion puede empezar con (A)
+        if (line[1].split(","))[0] == "(A)":
            print("Error en la linea {}: {} \tEl primer elemento no puede ser (A)".format(idx + 1, linea, line[0]))
            filecheck = False
 

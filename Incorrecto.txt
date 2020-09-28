@@ -20,3 +20,4 @@ SHL B
 XOR 1,(B)
 NOT 1,2
 OR A,2
+SUB B
