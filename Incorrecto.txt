@@ -1,0 +1,14 @@
+CMP 1,0
+JEQ #0E
+MOV (0),A
+MOV (1),B
+MOV A,B
+MIV B,A
+MOV A,(0)
+SUB A,1
+JEL #0D
+MOV (0),A
+MOV A,B
+ADD (1),B
+JMP #05
+MOV A,B
