@@ -33,12 +33,12 @@ for idx, linea in enumerate(Lineas):
         print("Error en la linea {}: {} \t{} no es una instruccion valida".format(idx + 1, linea, line[0]))
         filecheck = False
 
-    elif line[0][0] == "J" or line[0]== "INC" or line[0]== "RST":
+    if line[0][0] == "J" or line[0]== "INC" or line[0]== "RST":
         if "," in line[1]:
             print("Error en la linea {}: {} \tError de sintaxis, {} solo recibe un parametro.".format(idx + 1, linea,line[0]))
             filecheck = False
 
-    elif line[0] == "CMP":
+    if line[0] == "CMP":
         if line[1] == "B,(A)" or line[1] == "B,A":
             print("Error en la linea {}: {} \tOperacion no soportada".format(idx + 1, linea,line[0]))
             filecheck = False
@@ -47,12 +47,12 @@ for idx, linea in enumerate(Lineas):
         #    print("Error en la linea {}: {} \tOperacion no soportada (Lit,Lit)".format(idx + 1, linea,line[0]))
         #    filecheck = False
 
-    elif line[0] == "MOV":
+    if line[0] == "MOV":
         if line[1][0] == "(" and (line[1].split(","))[0] == "(A)":
            print("Error en la linea {}: {} \tEl primer elemento no puede ser (A)".format(idx + 1, linea, line[0]))
            filecheck = False
 
-    elif line[0] == "":
+    if line[0] == "":
         if "," in line[1]:
             print("Error en la linea {}: {} \tError de sintaxis, {} solo recibe un parametro.".format(idx + 1, linea, line[0]))
             filecheck = False
@@ -66,23 +66,24 @@ for idx, linea in enumerate(Lineas):
             print("Error en la linea {}: {} \tError de sintaxis, {} solo recibe un parametro.".format(idx + 1, linea, line[0]))
             filecheck = False
 
-    elif operation == "OR":
-        if secondoperand in listaMov or secondoperand[0] == "(A)" or (firstoperand[0] == "(" and secondoperand != ""):
+    if operation == "OR":
+        if secondoperand in listaMov or secondoperand[0] == "(A)" or firstoperand[0] == "(" and secondoperand[0] != "(" :
             print("Error en la linea {}: {} \tOperacion no soportada.".format(idx + 1, linea, line[0]))
             filecheck = False
 
-    elif operation == "NOT":
+    if operation == "NOT":
         if secondoperand in numeros or (firstoperand[0] == "(" and secondoperand == "") or secondoperand[0] == "(":
             print("Error en la linea {}: {} \tOperacion no soportada.".format(idx + 1, linea, line[0]))
             filecheck = False
 
-    elif operation == "XOR":
+    if operation == "XOR":
         if line[1] in listaMov or (firstoperand[0] == "(" and secondoperand != ""):
             print("Error en la linea {}: {} \tOperacion no soportada.".format(idx + 1, linea, line[0]))
             filecheck = False
 
-    elif operation == "SHL" or operation == "SHR":
-        if (secondoperand in numeros) or (firstoperand[0] == "(" and secondoperand != "") or firstoperand == "(A)":
+    if operation == "SHL" or operation == "SHR":
+        if firstoperand != "(" or secondoperand in numeros or firstoperand == "(A)" or line[1] in listaMov:
+        # if (secondoperand in numeros) or (firstoperand[0] == "(" and secondoperand != "") or firstoperand == "(A)":
             print("Error en la linea {}: {} \tOperacion no soportada.".format(idx + 1, linea, line[0]))
             filecheck = False
         try:
@@ -92,13 +93,13 @@ for idx, linea in enumerate(Lineas):
         except:
             pass
 
-    elif operation == "INC" or operation == "RST":
+    if operation == "INC" or operation == "RST":
         if firstoperand[0] != "(" or firstoperand == "(A)" or firstoperand in numeros or firstoperand == "A":
             print("Error en la linea {}: {} \tOperacion no soportada.".format(idx + 1, linea, line[0]))
             filecheck = False
 
-    elif operation == "CMP":
-        if firstoperand[0] == "(" or secondoperand == "A" or secondoperand == "(A)" or line[1] in listaMov:
+    if operation == "CMP":
+        if firstoperand[0] == "(" or secondoperand == "A" or secondoperand == "(A)" or line[1] in listaMov :
             print("Error en la linea {}: {} \tOperacion no soportada.".format(idx + 1, linea, line[0]))
             filecheck = False
 
