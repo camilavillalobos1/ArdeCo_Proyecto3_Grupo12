@@ -33,9 +33,27 @@ for idx, linea in enumerate(Lineas):
         print("Error en la linea {}: {} \t{} no es una instruccion valida".format(idx + 1, linea, line[0]))
         filecheck = False
 
+    if (secondoperand == "" and firstoperand == "A") or (secondoperand == "" and firstoperand == "A") and operation != "INC":
+        print("Error en la linea {}: {} \t{} no es una instruccion valida".format(idx + 1, linea, line[0]))
+        filecheck = False
+
+    if firstoperand[0] == "(" and secondoperand == "(":
+        print("Error en la linea {}: {} \tError de sintaxis, {} no se acepta (Dir),(Dir).".format(idx + 1, linea,line[0]))
+        filecheck = False
+
+    if line[0] in instructions1:
+        if line[1][0] != "(":
+            print("Error en la linea {}: {} \tOperacion no valida'".format(idx + 1,linea,line[0]))
+            filecheck = False
+
     if line[0][0] == "J" or line[0]== "INC" or line[0]== "RST":
         if "," in line[1]:
             print("Error en la linea {}: {} \tError de sintaxis, {} solo recibe un parametro.".format(idx + 1, linea,line[0]))
+            filecheck = False
+
+    if line[0] == "":
+        if "," in line[1]:
+            print("Error en la linea {}: {} \tError de sintaxis, {} solo recibe un parametro.".format(idx + 1, linea, line[0]))
             filecheck = False
 
     if line[0] == "CMP":
@@ -43,28 +61,10 @@ for idx, linea in enumerate(Lineas):
             print("Error en la linea {}: {} \tOperacion no soportada".format(idx + 1, linea,line[0]))
             filecheck = False
 
-        #elif firstoperand in numeros:
-        #    print("Error en la linea {}: {} \tOperacion no soportada (Lit,Lit)".format(idx + 1, linea,line[0]))
-        #    filecheck = False
-
     if line[0] == "MOV":
         if line[1][0] == "(" and (line[1].split(","))[0] == "(A)":
            print("Error en la linea {}: {} \tEl primer elemento no puede ser (A)".format(idx + 1, linea, line[0]))
            filecheck = False
-
-    if line[0] == "":
-        if "," in line[1]:
-            print("Error en la linea {}: {} \tError de sintaxis, {} solo recibe un parametro.".format(idx + 1, linea, line[0]))
-            filecheck = False
-
-    # elif line[0] == "NOT" or line[0] == "SHR" or line[0] == "SHL" or line[0] == "INC" or line[0] == "RST":
-    #     if line[1][0] != "(":
-    #         print("Error en la linea {}: {} \tOperacion no valida'".format(idx + 1,linea,line[0]))
-    #         filecheck = False
-
-        if "," in line[1]:
-            print("Error en la linea {}: {} \tError de sintaxis, {} solo recibe un parametro.".format(idx + 1, linea, line[0]))
-            filecheck = False
 
     if operation == "OR":
         if secondoperand in listaMov or secondoperand[0] == "(A)" or firstoperand[0] == "(" and secondoperand[0] != "(" :
@@ -82,8 +82,7 @@ for idx, linea in enumerate(Lineas):
             filecheck = False
 
     if operation == "SHL" or operation == "SHR":
-        if firstoperand != "(" or secondoperand in numeros or firstoperand == "(A)" or line[1] in listaMov:
-        # if (secondoperand in numeros) or (firstoperand[0] == "(" and secondoperand != "") or firstoperand == "(A)":
+        if secondoperand in numeros or firstoperand == "(A)" or (firstoperand == "(B)" and secondoperand != ""):
             print("Error en la linea {}: {} \tOperacion no soportada.".format(idx + 1, linea, line[0]))
             filecheck = False
         try:
@@ -102,8 +101,6 @@ for idx, linea in enumerate(Lineas):
         if firstoperand[0] == "(" or secondoperand == "A" or secondoperand == "(A)" or line[1] in listaMov :
             print("Error en la linea {}: {} \tOperacion no soportada.".format(idx + 1, linea, line[0]))
             filecheck = False
-
-
 
 if filecheck == False:
     print("\nError: Uno o más errores encontrados a la hora de compilar")
