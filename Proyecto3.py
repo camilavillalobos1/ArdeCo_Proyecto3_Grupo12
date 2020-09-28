@@ -82,11 +82,11 @@ for idx, linea in enumerate(Lineas):
             filecheck = False
 
     elif operation == "SHL" or operation == "SHR":
-        if secondoperand[0] == "(" or (secondoperand in numeros) or (firstoperand[0] == "(" and secondoperand != "") or firstoperand == "(A)":
+        if (secondoperand in numeros) or (firstoperand[0] == "(" and secondoperand != "") or firstoperand == "(A)":
             print("Error en la linea {}: {} \tOperacion no soportada.".format(idx + 1, linea, line[0]))
             filecheck = False
         try:
-            if firstoperand[1] in numeros:
+            if firstoperand[1] in numeros or secondoperand[0] == "(":
                 print("Error en la linea {}: {} \tOperacion no soportada.".format(idx + 1, linea, line[0]))
                 filecheck = False
         except:
