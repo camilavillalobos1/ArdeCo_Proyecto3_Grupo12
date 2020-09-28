@@ -5,7 +5,8 @@ except IOError:
     exit()
 
 Lineas = file.readlines()
-instructions = ["CMP", "JEQ", "MOV", "SUB", "ADD", "JMP"]
+instructions = ["CMP", "JEQ", "JMP","JNE", "JGT", "JLT", "JGE", "JLE", "JCR", "JOV" , "MOV", "SUB", "ADD", "AND", "OR",
+                "NOT", "XOR", "SHL", "SHR", "INC", "RST"]
 instructions1 =  ["NOT","SHL", "SHR", "INC", "RST"]
 numeros = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 listaMov = ["(A),B", "A,(A)", "A,A", "B,B"]
@@ -43,7 +44,7 @@ for idx, linea in enumerate(Lineas):
                                                                                                             # line[0]))
     elif line[0] == "MOV":
         
-        if (line[1].split(","))[0] == "(A)":
+        if line[1][0] == "(" and (line[1].split(","))[0] == "(A)":
            print("Error en la linea {}: {} \tEl primer elemento no puede ser (A)".format(idx + 1, linea, line[0]))
             
        # elif line[1][0] == "(A),B" or line[1][0] == "A,(A)" or line[1][0] ==  "A,A" or line[1][0] ==  "B,B":
