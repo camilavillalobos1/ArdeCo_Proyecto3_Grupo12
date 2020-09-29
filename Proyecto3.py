@@ -1,5 +1,5 @@
 try:
-    file = open("Problema_1.txt", 'r') #Abre archivo de texto con assembly
+    file = open("p3_1-correccion2.ass", 'r') #Abre archivo de texto con assembly
 except IOError:
     print("No se encontro el archivo")
     exit()
@@ -12,7 +12,7 @@ notDoubles = ["MOV", "CMP"]
 numeros = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9","#00","#01","#03","#04","#05","#06","#07","#08","#09",
            "#0A","#0B","#0C","#0D","#0E","#0F"]
 listaMov = ["(A),B", "A,(A)", "A,A", "B,B"]
-        
+
 filecheck =True
 for idx, linea in enumerate(Lineas):
     line = linea.split()
@@ -57,7 +57,7 @@ for idx, linea in enumerate(Lineas):
             print("Error en la linea {}: {} \tInstruccion invalida.".format(idx + 1, linea))
             filecheck = False
 
-    if ((operation in notDoubles) and (secondoperand == "")):
+    if ((operation in notDoubles) and (secondoperand[0] == "")):
         print("Error en la linea {}: {} \t{} debe recibir 2 parametros.".format(idx + 1, linea, line[0]))
         filecheck = False
 
@@ -130,5 +130,6 @@ if filecheck:
     print("\nCompilación realizada con exito")
 else:
     print("\nError: Uno o más errores encontrados a la hora de compilar")
-
+#direccion out of bound
+#MOV literales
 file.close()
