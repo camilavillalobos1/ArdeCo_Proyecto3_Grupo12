@@ -40,6 +40,17 @@ for idx, linea in enumerate(Lineas):
         print("Error en la linea {}: {} \t{} no es una instruccion valida".format(idx + 1, linea, line[0]))
         filecheck = False
 
+    if line[0] == "ADD" or line[0] == "SUB" or line[0] == "AND":
+        if line[1][0] == "(":
+            if line[1].strip("(),") in numeros and line[2] != "":
+                print("Error en la linea {}: {} \t{} (Dir), algo no es una instruccion valida".format(idx + 1, linea, line[0]))
+                filecheck = False
+            elif line[1].strip("(),") == "A" or line[1].strip("(),") == "B":
+                print("Error en la linea {}: {} \t{} no acepta (A) o (B) como primer parametro".format(idx + 1, linea,
+                                                                                                        line[0]))
+                filecheck = False
+
+
     if ((operation in notDoubles) and (secondoperand == "")):
         print("Error en la linea {}: {} \t{} debe recibir 2 parametros.".format(idx + 1, linea, line[0]))
         filecheck = False
