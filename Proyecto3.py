@@ -1,5 +1,5 @@
 try:
-    file = open("Incorrecto.txt", 'r')
+    file = open("Problema_1.txt", 'r') #Abre archivo de texto con assembly
 except IOError:
     print("No se encontro el archivo")
     exit()
@@ -12,7 +12,7 @@ notDoubles = ["MOV", "CMP"]
 numeros = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9","#00","#01","#03","#04","#05","#06","#07","#08","#09",
            "#0A","#0B","#0C","#0D","#0E","#0F"]
 listaMov = ["(A),B", "A,(A)", "A,A", "B,B"]
-
+        
 filecheck =True
 for idx, linea in enumerate(Lineas):
     line = linea.split()
@@ -42,24 +42,23 @@ for idx, linea in enumerate(Lineas):
 
     if line[0] == "ADD" or line[0] == "SUB" or line[0] == "AND":
         if line[1][0] == "(":
+            if line[1][1] in numeros:
+                print("Error en la linea {}: {} \t{} (Dir), algo no es una instruccion valida".format(idx + 1, linea, line[0]))
+                filecheck = False
             if line[1].strip("(),") in numeros and line[2] != "":
                 print("Error en la linea {}: {} \t{} (Dir), algo no es una instruccion valida".format(idx + 1, linea, line[0]))
                 filecheck = False
-            elif line[1].strip("(),") == "A" or line[1].strip("(),") == "B":
-                print("Error en la linea {}: {} \t{} no acepta (A) o (B) como primer parametro".format(idx + 1, linea,
-                                                                                                        line[0]))
+            if line[1].strip("(),") == "A" or line[1].strip("(),") == "B":
+                print("Error en la linea {}: {} \t{} no acepta (A) o (B) como primer parametro".format(idx + 1, linea,line[0]))
                 filecheck = False
+
     if line[0] == "MOV" and line[1][0] =="(":
         if line[1].strip("(),") == "B" and line[2] != "A":
-            print("Error en la linea {}: {} \tInstruccion invalida.".format(idx + 1, linea)
+            print("Error en la linea {}: {} \tInstruccion invalida.".format(idx + 1, linea))
             filecheck = False
 
     if ((operation in notDoubles) and (secondoperand == "")):
         print("Error en la linea {}: {} \t{} debe recibir 2 parametros.".format(idx + 1, linea, line[0]))
-        filecheck = False
-
-    if (operation not in notDoubles and (operation != "INC") and (firstoperand[0] != "(" and secondoperand == "")):
-        print("Error en la linea {}: {} \tCuando {} recibe 1 parametro este debe ser una direccion.".format(idx + 1, linea, line[0]))
         filecheck = False
 
     if firstoperand[0] == "(" and secondoperand == "(":
@@ -127,7 +126,9 @@ for idx, linea in enumerate(Lineas):
             print("Error en la linea {}: {} \tOperacion no soportada.".format(idx + 1, linea, line[0]))
             filecheck = False
 
-if filecheck == False:
+if filecheck:
+    print("\nCompilación realizada con exito")
+else:
     print("\nError: Uno o más errores encontrados a la hora de compilar")
 
 file.close()
