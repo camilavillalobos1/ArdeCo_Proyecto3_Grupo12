@@ -50,7 +50,7 @@ for idx, linea in enumerate(Lineas):
                                                                                                         line[0]))
                 filecheck = False
     if line[0] == "MOV" and line[1][0] =="(":
-        if line[1].strip("(),") != "B" and line[2] != "A":
+        if line[1].strip("(),") == "B" and line[2] != "A":
             print("Error en la linea {}: {} \tInstruccion invalida.".format(idx + 1, linea)
             filecheck = False
 
