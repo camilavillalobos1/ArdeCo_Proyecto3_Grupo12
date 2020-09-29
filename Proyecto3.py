@@ -49,7 +49,10 @@ for idx, linea in enumerate(Lineas):
                 print("Error en la linea {}: {} \t{} no acepta (A) o (B) como primer parametro".format(idx + 1, linea,
                                                                                                         line[0]))
                 filecheck = False
-
+    if line[0] == "MOV" and line[1][0] =="(":
+        if line[1].strip("(),") != "B" and line[2] != "A":
+            print("Error en la linea {}: {} \tInstruccion invalida.".format(idx + 1, linea)
+            filecheck = False
 
     if ((operation in notDoubles) and (secondoperand == "")):
         print("Error en la linea {}: {} \t{} debe recibir 2 parametros.".format(idx + 1, linea, line[0]))
