@@ -1,20 +1,78 @@
+
 try:
     file = open("p3_1-correccion2.ass", 'r') #Abre archivo de texto con assembly
 except IOError:
     print("No se encontro el archivo")
     exit()
 
+
+file1 = open("datos.txt", 'w')
+
+
+
 Lineas = file.readlines()
 instructions = ["CMP", "JEQ", "JMP","JNE", "JGT", "JLT", "JGE", "JLE", "JCR", "JOV" , "MOV", "SUB", "ADD", "AND", "OR",
                 "NOT", "XOR", "SHL", "SHR", "INC", "RST"]
-instructions1 = ["NOT","SHL", "SHR", "INC", "RST"]
+instructions1 = ["SHL", "SHR", "INC", "RST"]
 notDoubles = ["MOV", "CMP"]
 numeros = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9","#00","#01","#03","#04","#05","#06","#07","#08","#09",
            "#0A","#0B","#0C","#0D","#0E","#0F"]
 listaMov = ["(A),B", "A,(A)", "A,A", "B,B"]
 
-filecheck =True
+
+binario = {'MOV A,B' : '0000000',
+                    'MOV B,A':'0000001',
+                    'MOV A,Lit':'0000010',
+                    'MOV B,Lit':'0000011',
+                    'ADD A,B':'0000100',
+                    'ADD B,A':'0000101',
+                    'ADD A,Lit':'0000110',
+                    'ADD B,Lit':'0000111',
+                    'SUB A,B':'0001000',
+                    'SUB B,A':'0001001',
+                    'SUB A,Lit':'0001010',
+                    'SUB B,Lit':'0001011',
+                    'AND A,B':'0001100',
+                    'AND B,A':'0001101',
+                    'AND A,Lit':'0001110',
+                    'AND B,Lit':'0001111',
+                    'OR A,B':'0010000',
+                    'OR B,A':'0010001',
+                    'OR A,Lit':'0010010',
+                    'OR B,Lit':'0010011',
+                    'NOT A,A':'0010100',
+                    'NOT A,B':'0010101',
+                    'NOT B,A':'0010110',
+                    'NOT B,B':'0010111',
+                    'XOR A,A':'0011000',
+                    'XOR B,A':'0011001',
+                    'XOR A,Lit':'0011010',
+                    'XOR B,Lit':'0011011',
+                    'SHL A,A':'0011100',
+                    'SHL A,B':'0011101',
+                    'SHL B,A':'0011110',
+                    'SHL B,B':'0011111',
+                    'SHR A,A':'0100000',
+                    'SHR A,B':'0100001',
+                    'SHR B,A':'0100010',
+                    'SHR B,B':'0100011',
+                    'INC B':'0100100'}
+
+
+# print (dic_instruciones["MOV A,B"]) 
+
+filecheck = True
 for idx, linea in enumerate(Lineas):
+    print ("Esta es la linea "+ linea)
+    
+    linea = linea.strip()
+    
+    if linea in binario:
+        print ("La linea es: "+ linea +" y en binario es: " + binario[linea])
+        file1.write(binario[linea]+"\n")
+        
+
+            
     line = linea.split()
 
     #Quizas sea util para debugear despues
@@ -67,7 +125,7 @@ for idx, linea in enumerate(Lineas):
 
     if line[0] in instructions1:
         if line[1][0] != "(":
-            print("Error en la linea {}: {} \tOperacion no valida'".format(idx + 1,linea,line[0]))
+            print("Error en la linea {}: {} \tOperacion no valida".format(idx + 1,linea,line[0]))
             filecheck = False
 
     if line[0][0] == "J" or line[0]== "INC" or line[0]== "RST":
@@ -125,6 +183,11 @@ for idx, linea in enumerate(Lineas):
         if firstoperand[0] == "(" or secondoperand == "A" or secondoperand == "(A)" or line[1] in listaMov :
             print("Error en la linea {}: {} \tOperacion no soportada.".format(idx + 1, linea, line[0]))
             filecheck = False
+            
+    
+
+    
+
 
 if filecheck:
     print("\nCompilación realizada con exito")
@@ -132,4 +195,19 @@ else:
     print("\nError: Uno o más errores encontrados a la hora de compilar")
 #direccion out of bound
 #MOV literales
+
+#META 2
+
+
+
+        
+
+    
+
+
+
+      
+
+
 file.close()
+file1.close()
