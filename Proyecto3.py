@@ -1,6 +1,6 @@
 
 try:
-    file = open("p3_1-correccion2.ass", 'r') #Abre archivo de texto con assembly
+    file = open("p3_1-correccion1.ass", 'r') #Abre archivo de texto con assembly
 except IOError:
     print("No se encontro el archivo")
     exit()
@@ -52,18 +52,18 @@ binario = {'MOV A,B' : '0000000',
                     'SHR B,B':'0100011',
                     'INC B':'0100100'}
 
-binario_literal = {'MOV A,Lit':'0000010',
-                    'MOV B,Lit':'0000011',
-                    'ADD A,Lit':'0000110',
-                    'ADD B,Lit':'0000111',
-                    'SUB A,Lit':'0001010',
-                    'SUB B,Lit':'0001011',
-                    'AND A,Lit':'0001110',
-                    'AND B,Lit':'0001111',
-                    'OR A,Lit':'0010010',
-                    'OR B,Lit':'0010011',
-                    'XOR A,Lit':'0011010',
-                    'XOR B,Lit':'0011011',
+binario_literal = {'MOV A':'0000010',
+                    'MOV B':'0000011',
+                    'ADD A':'0000110',
+                    'ADD B':'0000111',
+                    'SUB A':'0001010',
+                    'SUB B':'0001011',
+                    'AND A':'0001110',
+                    'AND B':'0001111',
+                    'OR A':'0010010',
+                    'OR B':'0010011',
+                    'XOR A':'0011010',
+                    'XOR B':'0011011',
                     }
 
 literales = {'0':'00000000'}
@@ -74,7 +74,7 @@ filecheck = True
 for idx, linea in enumerate(Lineas):
     
     line = linea.split()
-    print ("Esta es la linea "+ linea)
+
     
     linea = linea.strip()
     
@@ -86,14 +86,6 @@ for idx, linea in enumerate(Lineas):
         secondoperand = (line[1].split(","))[1]
     print(operation, firstoperand, secondoperand)
     
-    if linea in binario:
-        print ("La linea es: "+ linea +" y en binario es: " + binario[linea])
-        file1.write(binario[linea]+ "        "+"\n")
-                
-    if linea not in binario:
-        for a in numeros:
-            if operation == "MOV" and firstoperand == "A":
-                file1.write(binario_literal['MOV A,Lit']+ literales["'"+a+"'"]+"\n")
 
 
     #Quizas sea util para debugear despues
@@ -215,6 +207,30 @@ else:
 #MOV literales
 
 #META 2
+if filecheck:
+    for idx, linea in enumerate(Lineas):
+        linea = linea.strip()
+        line = linea.split(",")
+        print("Esta es la linea " + linea)
+        if linea in binario:
+            print("\tSi esta")
+            #print(binario[linea]+"00000000")
+            #print("La linea es: " + linea + " y en binario es: " + binario[linea])
+            file1.write(binario[linea] + "00000001" + "\n")
+
+        if linea not in binario:
+            if line[0] in binario_literal:
+                if line[1][0] != "(":
+                    #print("\tSi esta en dic literal "+"{0:b}".format(int(line[1])))
+                    file1.write(binario_literal[line[0]]+"{0:08b}".format(int(line[1]))+"\n")
+                else:
+                    print("\tNo implementado para meta 2")
+            else:
+                print("\tNo implementado para meta 2")
+           # for a in numeros:
+                #if operation == "MOV" and firstoperand == "A":
+                    #file1.write(binario_literal['MOV A,Lit'] + literales["'" + a + "'"] + "\n")
+
 
 
 
