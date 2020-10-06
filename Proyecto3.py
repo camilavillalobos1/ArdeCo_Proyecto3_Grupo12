@@ -6,7 +6,7 @@ except IOError:
     exit()
 
 
-file1 = open("datos.txt", 'w')
+file1 = open("datos1.txt", 'w')
 
 
 
@@ -22,32 +22,26 @@ listaMov = ["(A),B", "A,(A)", "A,A", "B,B"]
 
 binario = {'MOV A,B' : '0000000',
                     'MOV B,A':'0000001',
-                    'MOV A,Lit':'0000010',
-                    'MOV B,Lit':'0000011',
+
                     'ADD A,B':'0000100',
                     'ADD B,A':'0000101',
-                    'ADD A,Lit':'0000110',
-                    'ADD B,Lit':'0000111',
+
                     'SUB A,B':'0001000',
                     'SUB B,A':'0001001',
-                    'SUB A,Lit':'0001010',
-                    'SUB B,Lit':'0001011',
+
                     'AND A,B':'0001100',
                     'AND B,A':'0001101',
-                    'AND A,Lit':'0001110',
-                    'AND B,Lit':'0001111',
+
                     'OR A,B':'0010000',
                     'OR B,A':'0010001',
-                    'OR A,Lit':'0010010',
-                    'OR B,Lit':'0010011',
+
                     'NOT A,A':'0010100',
                     'NOT A,B':'0010101',
                     'NOT B,A':'0010110',
                     'NOT B,B':'0010111',
                     'XOR A,A':'0011000',
                     'XOR B,A':'0011001',
-                    'XOR A,Lit':'0011010',
-                    'XOR B,Lit':'0011011',
+
                     'SHL A,A':'0011100',
                     'SHL A,B':'0011101',
                     'SHL B,A':'0011110',
@@ -58,24 +52,32 @@ binario = {'MOV A,B' : '0000000',
                     'SHR B,B':'0100011',
                     'INC B':'0100100'}
 
+binario_literal = {'MOV A,Lit':'0000010',
+                    'MOV B,Lit':'0000011',
+                    'ADD A,Lit':'0000110',
+                    'ADD B,Lit':'0000111',
+                    'SUB A,Lit':'0001010',
+                    'SUB B,Lit':'0001011',
+                    'AND A,Lit':'0001110',
+                    'AND B,Lit':'0001111',
+                    'OR A,Lit':'0010010',
+                    'OR B,Lit':'0010011',
+                    'XOR A,Lit':'0011010',
+                    'XOR B,Lit':'0011011',
+                    }
+
+literales = {'0':'00000000'}
 
 # print (dic_instruciones["MOV A,B"]) 
 
 filecheck = True
 for idx, linea in enumerate(Lineas):
+    
+    line = linea.split()
     print ("Esta es la linea "+ linea)
     
     linea = linea.strip()
     
-    if linea in binario:
-        print ("La linea es: "+ linea +" y en binario es: " + binario[linea])
-        file1.write(binario[linea]+"\n")
-        
-
-            
-    line = linea.split()
-
-    #Quizas sea util para debugear despues
     operation = line[0]
     firstoperand = line[1]
     secondoperand = ""
@@ -83,6 +85,22 @@ for idx, linea in enumerate(Lineas):
         firstoperand = (line[1].split(","))[0]
         secondoperand = (line[1].split(","))[1]
     print(operation, firstoperand, secondoperand)
+    
+    if linea in binario:
+        print ("La linea es: "+ linea +" y en binario es: " + binario[linea])
+        file1.write(binario[linea]+ "        "+"\n")
+                
+    if linea not in binario:
+        for a in numeros:
+            if operation == "MOV" and firstoperand == "A":
+                file1.write(binario_literal['MOV A,Lit']+ literales["'"+a+"'"]+"\n")
+
+
+    #Quizas sea util para debugear despues
+
+    
+
+                
 
     for a in numeros:  # Para que ninguna instruccion empiece con un literal
         if line[1][0] == a and line[0][0] != "J":
