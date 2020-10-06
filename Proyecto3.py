@@ -1,6 +1,6 @@
 
 try:
-    file = open("p3_1-correccion2.ass", 'r') #Abre archivo de texto con assembly
+    file = open("p3_1-correccion1.ass", 'r') #Abre archivo de texto con assembly
 except IOError:
     print("No se encontro el archivo")
     exit()
@@ -65,9 +65,6 @@ binario_literal = {'MOV A':'0000010',
                     'XOR A':'0011010',
                     'XOR B':'0011011',
                     }
-
-literales = {'0':'00000000'}
-
 
 
 filecheck = True
@@ -262,19 +259,17 @@ for idx, linea in enumerate(Lineas):
             print("Error en la linea {}: {} \tOperacion no soportada.".format(idx + 1, linea, line[0]))
             filecheck = False
             
-    
-
-    
 
 
 if filecheck:
-    print("\nCompilación realizada con exito")
+    print("\nCompilación realizada con exito\n")
 else:
     print("\nError: Uno o más errores encontrados a la hora de compilar")
 #direccion out of bound
 #MOV literales
 
 #META 2
+
 if filecheck:
     for idx, linea in enumerate(Lineas):
         linea = linea.strip()
@@ -285,11 +280,12 @@ if filecheck:
             #print(binario[linea]+"00000000")
             #print("La linea es: " + linea + " y en binario es: " + binario[linea])
             file1.write(binario[linea] + "00000001" + "\n")
-
+    
         if linea not in binario:
             if line[0] in binario_literal:
                 if line[1][0] != "(":
                     #print("\tSi esta en dic literal "+"{0:b}".format(int(line[1])))
+                    print ("\tSi esta")
                     file1.write(binario_literal[line[0]]+"{0:08b}".format(int(line[1]))+"\n")
                 else:
                     print("\tNo implementado para meta 2")
@@ -299,16 +295,7 @@ if filecheck:
                 #if operation == "MOV" and firstoperand == "A":
                     #file1.write(binario_literal['MOV A,Lit'] + literales["'" + a + "'"] + "\n")
 
-
-
-
-        
-
-    
-
-
-
-      
+     
 
 
 file.close()
