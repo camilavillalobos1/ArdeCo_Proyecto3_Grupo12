@@ -110,11 +110,11 @@ for idx, linea in enumerate(Lineas):
 
     if line[0] == "ADD" or line[0] == "SUB" or line[0] == "AND":
         if line[1][0] == "(":
-            if secondoperand[0] != "(" and secondoperand != "A" and secondoperand != "B":
-                if secondoperand[0] == "#":
-                    num = int("0x" + secondoperand.strip("#\n"), 0)
+            if line[1][1] != "A" or line[1][1] != "B":
+                if line[1][1] == "#":
+                    num = int("0x" + firstoperand.strip("()"), 0)
                 else:
-                    num = int(secondoperand, 0)
+                    num = int(firstoperand.strip("()"), 0)
                 if num > 256:
                     print("Error en la linea {}: {} \tEl literal excede el valor aceptado.".format(idx + 1, linea))
                     filecheck = False
@@ -127,9 +127,25 @@ for idx, linea in enumerate(Lineas):
             if line[1].strip("(),") == "A" or line[1].strip("(),") == "B":
                 print("Error en la linea {}: {} \t{} no acepta (A) o (B) como primer parametro".format(idx + 1, linea,line[0]))
                 filecheck = False
-
+        else:
+            if secondoperand[0] != "(" and secondoperand != "A" and secondoperand != "B":
+                if secondoperand[0] == "#":
+                    num = int("0x" + secondoperand.strip("#\n"), 0)
+                else:
+                    num = int(secondoperand, 0)
+                if num > 256:
+                    print("Error en la linea {}: {} \tEl literal excede el valor aceptado.".format(idx + 1, linea))
+                    filecheck = False
 
     if line[0] == "MOV" and line[1][0] == "(":
+        if line[1][1] != "A" or line[1][1] != "B":
+            if line[1][1] == "#":
+                num = int("0x" + firstoperand.strip("()"), 0)
+            else:
+                num = int(firstoperand.strip("()"), 0)
+            if num > 256:
+                print("Error en la linea {}: {} \tEl literal excede el valor aceptado.".format(idx + 1, linea))
+                filecheck = False
         if line[1].strip("(),") == "B" and line[2] != "A":
             print("Error en la linea {}: {} \tInstruccion invalida.".format(idx + 1, linea))
             filecheck = False
@@ -186,6 +202,15 @@ for idx, linea in enumerate(Lineas):
            filecheck = False
 
     if operation == "OR":
+        if firstoperand[0] == "(":
+            if line[1][1] != "A" or line[1][1] != "B":
+                if line[1][1] == "#":
+                    num = int("0x" + firstoperand.strip("()"), 0)
+                else:
+                    num = int(firstoperand.strip("()"), 0)
+                if num > 256:
+                    print("Error en la linea {}: {} \tEl literal excede el valor aceptado.".format(idx + 1, linea))
+                    filecheck = False
         if secondoperand[0] != "(" and secondoperand != "A" and secondoperand != "B":
             if secondoperand[0] == "#":
                 num = int("0x" + secondoperand.strip("#\n"), 0)
