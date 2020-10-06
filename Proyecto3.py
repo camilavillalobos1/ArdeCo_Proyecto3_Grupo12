@@ -1,6 +1,6 @@
 
 try:
-    file = open("p3_1-correccion1.ass", 'r') #Abre archivo de texto con assembly
+    file = open("p3_1-correccion2.ass", 'r') #Abre archivo de texto con assembly
 except IOError:
     print("No se encontro el archivo")
     exit()
@@ -68,7 +68,7 @@ binario_literal = {'MOV A':'0000010',
 
 literales = {'0':'00000000'}
 
-# print (dic_instruciones["MOV A,B"]) 
+
 
 filecheck = True
 for idx, linea in enumerate(Lineas):
@@ -110,6 +110,14 @@ for idx, linea in enumerate(Lineas):
 
     if line[0] == "ADD" or line[0] == "SUB" or line[0] == "AND":
         if line[1][0] == "(":
+            if secondoperand[0] != "(" and secondoperand != "A" and secondoperand != "B":
+                if secondoperand[0] == "#":
+                    num = int("0x" + secondoperand.strip("#\n"), 0)
+                else:
+                    num = int(secondoperand, 0)
+                if num > 256:
+                    print("Error en la linea {}: {} \tEl literal excede el valor aceptado.".format(idx + 1, linea))
+                    filecheck = False
             if line[1][1] in numeros:
                 print("Error en la linea {}: {} \t{} (Dir), algo no es una instruccion valida".format(idx + 1, linea, line[0]))
                 filecheck = False
@@ -120,10 +128,21 @@ for idx, linea in enumerate(Lineas):
                 print("Error en la linea {}: {} \t{} no acepta (A) o (B) como primer parametro".format(idx + 1, linea,line[0]))
                 filecheck = False
 
-    if line[0] == "MOV" and line[1][0] =="(":
+
+    if line[0] == "MOV" and line[1][0] == "(":
         if line[1].strip("(),") == "B" and line[2] != "A":
             print("Error en la linea {}: {} \tInstruccion invalida.".format(idx + 1, linea))
             filecheck = False
+
+    if line[0] == "MOV":
+        if secondoperand[0] != "(" and secondoperand != "A" and secondoperand != "B":
+            if secondoperand[0] == "#":
+                num = int("0x" + secondoperand.strip("#\n"), 0)
+            else:
+                num = int(secondoperand, 0)
+            if num > 256:
+                print("Error en la linea {}: {} \tEl literal excede el valor aceptado.".format(idx + 1, linea))
+                filecheck = False
 
     if ((operation in notDoubles) and (secondoperand[0] == "")):
         print("Error en la linea {}: {} \t{} debe recibir 2 parametros.".format(idx + 1, linea, line[0]))
@@ -139,6 +158,14 @@ for idx, linea in enumerate(Lineas):
             filecheck = False
 
     if line[0][0] == "J" or line[0]== "INC" or line[0]== "RST":
+        if firstoperand != "A" and firstoperand != "B" and firstoperand[0] != "(":
+            if firstoperand[0] == "#":
+                num = int("0x" + firstoperand.strip("#\n"), 0)
+            else:
+                num = int(firstoperand, 0)
+            if num > 256:
+                print("Error en la linea {}: {} \tEl literal excede el valor aceptado.".format(idx + 1, linea))
+                filecheck = False
         if "," in line[1]:
             print("Error en la linea {}: {} \tError de sintaxis, {} solo recibe un parametro.".format(idx + 1, linea,line[0]))
             filecheck = False
@@ -159,6 +186,14 @@ for idx, linea in enumerate(Lineas):
            filecheck = False
 
     if operation == "OR":
+        if secondoperand[0] != "(" and secondoperand != "A" and secondoperand != "B":
+            if secondoperand[0] == "#":
+                num = int("0x" + secondoperand.strip("#\n"), 0)
+            else:
+                num = int(secondoperand, 0)
+            if num > 256:
+                print("Error en la linea {}: {} \tEl literal excede el valor aceptado.".format(idx + 1, linea))
+                filecheck = False
         if secondoperand in listaMov or secondoperand[0] == "(A)" or firstoperand[0] == "(" and secondoperand[0] != "(" :
             print("Error en la linea {}: {} \tOperacion no soportada.".format(idx + 1, linea, line[0]))
             filecheck = False
@@ -169,6 +204,14 @@ for idx, linea in enumerate(Lineas):
             filecheck = False
 
     if operation == "XOR":
+        if secondoperand[0] != "(" and secondoperand != "A" and secondoperand != "B":
+            if secondoperand[0] == "#":
+                num = int("0x" + secondoperand.strip("#\n"), 0)
+            else:
+                num = int(secondoperand, 0)
+            if num > 256:
+                print("Error en la linea {}: {} \tEl literal excede el valor aceptado.".format(idx + 1, linea))
+                filecheck = False
         if line[1] in listaMov or (firstoperand[0] == "(" and secondoperand != ""):
             print("Error en la linea {}: {} \tOperacion no soportada.".format(idx + 1, linea, line[0]))
             filecheck = False
