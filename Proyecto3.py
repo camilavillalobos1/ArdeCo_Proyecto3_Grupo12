@@ -329,11 +329,11 @@ if filecheck:
         
         
         linea = linea.strip()
-        line = linea.split()
+        line = linea.split(",")
 
         print("Esta es la linea " + linea)
-        print ("Linea 0: " + line[0])
-        print ("Linea 1: "+ line[1])
+        # print ("Linea 0: " + line[0])
+        # print ("Linea 1: "+ line[1])
 
         if linea in binario:
             print("\tSi esta")
@@ -342,7 +342,7 @@ if filecheck:
 
         if linea not in binario:
             
-            if linea[0] in binario_literal:
+            if line[0] in binario_literal:
             
                 if line[1][0] != "(":
                     print ("\tSi esta")
