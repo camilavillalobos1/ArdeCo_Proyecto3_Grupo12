@@ -58,6 +58,8 @@ binario = {'MOV A,B' : '0000000',
                     'SHL (B)':'1000101',
                     'SHR (B)':'1001000',
                     'CMP A,(B)':'1010010',
+                    'INC (B)':'1001010',
+                    'RST (B)':'1001100'
                     }
 
 binario_literal = {'MOV A':'0000010',
@@ -82,16 +84,16 @@ binario_direccionamiento = {'MOV A':'0100101',
                             'MOV (),B':'0101000',
                             'ADD A':'0101100',
                             'ADD B':'0101101',
-                            'ADD ()':'0101111',
+                            'ADD':'0101111',
                             'SUB A':'0110000',
                             'SUB B':'0110001',
-                            'SUB ()':'0110011',
+                            'SUB':'0110011',
                             'AND A':'0110100',
                             'AND B':'0110101',
-                            'AND ()':'0110111',
+                            'AND':'0110111',
                             'OR A':'0111000',
                             'OR B':'0111001',
-                            'OR ()':'0111011',
+                            'OR':'0111011',
                             'NOT (),A':'0111100',
                             'NOT (),B':'0111101',
                             'XOR A':'0111111',
@@ -102,9 +104,7 @@ binario_direccionamiento = {'MOV A':'0100101',
                             'SHR (),A':'1000110',
                             'SHR (),B':'1000111',
                             'INC ()':'1001001',
-                            'INC (B)':'1001010',
-                            'RST ()':'1001011',
-                            'RST (B)':'1001100',
+                            'RST':'1001011',
                             'CMP A':'1010000',
                             'CMP B':'1010001',
                             }
@@ -330,43 +330,74 @@ if filecheck:
         
         linea = linea.strip()
         line = linea.split(",")
-
-        print("Esta es la linea " + linea)
-        # print ("Linea 0: " + line[0])
-        # print ("Linea 1: "+ line[1])
-
+        
         if linea in binario:
+            
+            print("Esta es la linea " + linea)
+            print ("Linea 0: " + line[0])
             print("\tSi esta")
             file1.write(binario[linea] + "00000000" + "\n")
             
 
         if linea not in binario:
+
             
             if line[0] in binario_literal:
             
                 if line[1][0] != "(":
+                    print("Esta es la linea " + linea)
+                    print ("Linea 0: " + line[0])
                     print ("\tSi esta")
                     file1.write(binario_literal[line[0]]+"{0:08b}".format(int(line[1]))+"\n")
-    
-                else:
-                    print("\tNo implementado para meta 2")
-                   
-            elif line[0] in binario_jump:
-                
-                print ("\tSi esta")
-                
-                a = line[1].strip("#")
-                try: 
-                    file1.write(binario_jump[line[0]]+str(((hexadecimal[a])))+"\n") 
                     
-                except:
-                    file1.write(binario_jump[line[0]]+ "{0:08b}".format(int(line[1].strip("#")))+"\n")
+            if line[0] in binario_direccionamiento:   
                 
-            else:
-                print("\tNo implementado para meta 2")
+                if line[1][0] == "(":
+                    print("Esta es la linea " + linea)
+                    print ("Linea 0: " + line[0])
+                    print ("\tSi esta")
+                    try:
+                        file1.write(binario_direccionamiento[line[0]]+"{0:08b}".format(int(line[1].strip("()")))+"\n")
+                    except:
+                        file1.write(binario_direccionamiento[line[0]]+"{0:08b}".format(int(line[1].strip("()").strip("#")))+"\n")
+                        
+            
+    for idx, linea in enumerate(Lineas):
+        
+        
+        linea = linea.strip()
+        line = linea.split()
+
+        if line[0] in binario_jump:
+            print("Esta es la linea " + linea)
+            print ("Linea 0: " + line[0])
+            
+            print ("\tSi esta")
+            
+            a = line[1].strip("#")
+            try: 
+                file1.write(binario_jump[line[0]]+str(((hexadecimal[a])))+"\n") 
+                
+            except:
+                file1.write(binario_jump[line[0]]+ "{0:08b}".format(int(line[1].strip("#")))+"\n")
+                
+        if not "," in linea and line[0] in binario_direccionamiento:
+            print("Esta es la linea " + linea)
+            print ("Linea 0: " + line[0])
+            print ("\tSi esta")
+            a = line[1].strip("#")
+            try: 
+                file1.write(binario_direccionamiento[line[0]]+str(((hexadecimal[a.strip("()")])))+"\n") 
+                
+            except:
+                file1.write(binario_direccionamiento[line[0]]+ "{0:08b}".format(int(line[1].strip("()").strip("#")))+"\n")
+                #Tira error, no tiene definido cuanto es F2
+            
+                    
+                    
                 
 
-     
+                
 
 
 file.close()
