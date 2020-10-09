@@ -22,26 +22,20 @@ listaMov = ["(A),B", "A,(A)", "A,A", "B,B"]
 
 binario = {'MOV A,B' : '0000000',
                     'MOV B,A':'0000001',
-
                     'ADD A,B':'0000100',
                     'ADD B,A':'0000101',
-
                     'SUB A,B':'0001000',
                     'SUB B,A':'0001001',
-
                     'AND A,B':'0001100',
                     'AND B,A':'0001101',
-
                     'OR A,B':'0010000',
                     'OR B,A':'0010001',
-
                     'NOT A,A':'0010100',
                     'NOT A,B':'0010101',
                     'NOT B,A':'0010110',
                     'NOT B,B':'0010111',
                     'XOR A,A':'0011000',
                     'XOR B,A':'0011001',
-
                     'SHL A,A':'0011100',
                     'SHL A,B':'0011101',
                     'SHL B,A':'0011110',
@@ -50,7 +44,21 @@ binario = {'MOV A,B' : '0000000',
                     'SHR A,B':'0100001',
                     'SHR B,A':'0100010',
                     'SHR B,B':'0100011',
-                    'INC B':'0100100'}
+                    'INC B':'0100100',
+                    'CMP A,B':'1001101',
+                    'MOV A,(B)':'0101001',
+                    'MOV B,(B)':'0101010',
+                    'MOV (B),A':'0101011',
+                    'ADD A,(B)':'0101110',
+                    'SUB A,(B)':'0110010',
+                    'AND A,(B)':'0110110',
+                    'OR A,(B)':'0111010',
+                    'NOT (B)':'0111110',
+                    'XOR A,(B)':'1000001',
+                    'SHL (B)':'1000101',
+                    'SHR (B)':'1001000',
+                    'CMP A,(B)':'1010010',
+                    }
 
 binario_literal = {'MOV A':'0000010',
                     'MOV B':'0000011',
@@ -64,7 +72,56 @@ binario_literal = {'MOV A':'0000010',
                     'OR B':'0010011',
                     'XOR A':'0011010',
                     'XOR B':'0011011',
+                    'CMP A':'1001110',
+                    'CMP B':'1001111'
                     }
+
+binario_direccionamiento = {'MOV A':'0100101',
+                            'MOV B':'0100110',
+                            'MOV (),A':'0100111',
+                            'MOV (),B':'0101000',
+                            'ADD A':'0101100',
+                            'ADD B':'0101101',
+                            'ADD ()':'0101111',
+                            'SUB A':'0110000',
+                            'SUB B':'0110001',
+                            'SUB ()':'0110011',
+                            'AND A':'0110100',
+                            'AND B':'0110101',
+                            'AND ()':'0110111',
+                            'OR A':'0111000',
+                            'OR B':'0111001',
+                            'OR ()':'0111011',
+                            'NOT (),A':'0111100',
+                            'NOT (),B':'0111101',
+                            'XOR A':'0111111',
+                            'XOR B':'1000000',
+                            'XOR ()':'1000010',
+                            'SHL (),A':'1000011',
+                            'SHL (),B':'1000100',
+                            'SHR (),A':'1000110',
+                            'SHR (),B':'1000111',
+                            'INC ()':'1001001',
+                            'INC (B)':'1001010',
+                            'RST ()':'1001011',
+                            'RST (B)':'1001100',
+                            'CMP A':'1010000',
+                            'CMP B':'1010001',
+                            }
+
+binario_jump = {'JMP':'1010011',
+                    'JEQ':'1010100',
+                    'JNE':'1010101',
+                    'JGT':'1010110',
+                    'JLT':'1010111',
+                    'JGE':'1011000',
+                    'JLE':'1011001',
+                    'JCR':'1011010',
+                    'JOV':'1011011'}
+
+hexadecimal = {'0E':'00001110',
+               '0D':'00001101',
+               '0C':'00001100'}
 
 
 filecheck = True
@@ -249,51 +306,65 @@ for idx, linea in enumerate(Lineas):
         except:
             pass
 
-    if operation == "INC" or operation == "RST":
-        if firstoperand[0] != "(" or firstoperand == "(A)" or firstoperand in numeros or firstoperand == "A":
-            print("Error en la linea {}: {} \tOperacion no soportada.".format(idx + 1, linea, line[0]))
-            filecheck = False
+    # if operation == "INC" or operation == "RST":
+    #     if firstoperand[0] != "(" or firstoperand == "(A)" or firstoperand in numeros or firstoperand == "A":
+    #         print("Error en la linea {}: {} \tOperacion no soportada.".format(idx + 1, linea, line[0]))
+    #         filecheck = False
 
     if operation == "CMP":
-        if firstoperand[0] == "(" or secondoperand == "A" or secondoperand == "(A)" or line[1] in listaMov :
+        if firstoperand[0] == "(" or secondoperand == "A" or line[1] in listaMov :
             print("Error en la linea {}: {} \tOperacion no soportada.".format(idx + 1, linea, line[0]))
             filecheck = False
             
-
 
 if filecheck:
     print("\nCompilación realizada con exito\n")
 else:
     print("\nError: Uno o más errores encontrados a la hora de compilar")
-#direccion out of bound
-#MOV literales
 
 #META 2
 
 if filecheck:
     for idx, linea in enumerate(Lineas):
+        
+        
         linea = linea.strip()
-        line = linea.split(",")
+        line = linea.split()
+
         print("Esta es la linea " + linea)
+        print ("Linea 0: " + line[0])
+        print ("Linea 1: "+ line[1])
+
         if linea in binario:
             print("\tSi esta")
-            #print(binario[linea]+"00000000")
-            #print("La linea es: " + linea + " y en binario es: " + binario[linea])
-            file1.write(binario[linea] + "00000001" + "\n")
-    
+            file1.write(binario[linea] + "00000000" + "\n")
+            
+
         if linea not in binario:
-            if line[0] in binario_literal:
+            
+            if linea[0] in binario_literal:
+            
                 if line[1][0] != "(":
-                    #print("\tSi esta en dic literal "+"{0:b}".format(int(line[1])))
                     print ("\tSi esta")
                     file1.write(binario_literal[line[0]]+"{0:08b}".format(int(line[1]))+"\n")
+    
                 else:
                     print("\tNo implementado para meta 2")
+                   
+            elif line[0] in binario_jump:
+                
+                print ("\tSi esta")
+                
+                a = line[1].strip("#")
+                try: 
+                    file1.write(binario_jump[line[0]]+str(((hexadecimal[a])))+"\n") 
+                    
+                except:
+                    file1.write(binario_jump[line[0]]+ "{0:08b}".format(int(line[1].strip("#")))+"\n")
+                
             else:
                 print("\tNo implementado para meta 2")
-           # for a in numeros:
-                #if operation == "MOV" and firstoperand == "A":
-                    #file1.write(binario_literal['MOV A,Lit'] + literales["'" + a + "'"] + "\n")
+                
 
      
 
