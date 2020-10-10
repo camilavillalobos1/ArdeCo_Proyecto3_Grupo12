@@ -121,7 +121,8 @@ binario_jump = {'JMP':'1010011',
 
 hexadecimal = {'0E':'00001110',
                '0D':'00001101',
-               '0C':'00001100'}
+               '0C':'00001100',
+               'F2':'11110010'}
 
 
 filecheck = True
@@ -385,12 +386,14 @@ if filecheck:
             print("Esta es la linea " + linea)
             print ("Linea 0: " + line[0])
             print ("\tSi esta")
-            a = line[1].strip("#")
+            a = line[1].strip("()").strip("#")
+            
             try: 
-                file1.write(binario_direccionamiento[line[0]]+str(((hexadecimal[a.strip("()")])))+"\n") 
+                file1.write(binario_direccionamiento[line[0]]+ "{0:08b}".format(int(line[1].strip("()").strip("#")))+"\n")
+                
                 
             except:
-                file1.write(binario_direccionamiento[line[0]]+ "{0:08b}".format(int(line[1].strip("()").strip("#")))+"\n")
+                file1.write(binario_direccionamiento[line[0]]+str(((hexadecimal[a])))+"\n") 
                 #Tira error, no tiene definido cuanto es F2
             
                     
