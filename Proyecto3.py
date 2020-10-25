@@ -335,19 +335,16 @@ if filecheck:
         if linea in binario:
             
             print("Esta es la linea " + linea)
-            print ("Linea 0: " + line[0])
             print("\tSi esta")
             file1.write(binario[linea] + "00000000" + "\n")
             
 
         if linea not in binario:
-
             
             if line[0] in binario_literal:
             
                 if line[1][0] != "(":
                     print("Esta es la linea " + linea)
-                    print ("Linea 0: " + line[0])
                     print ("\tSi esta")
                     file1.write(binario_literal[line[0]]+"{0:08b}".format(int(line[1]))+"\n")
                     
@@ -355,14 +352,25 @@ if filecheck:
                 
                 if line[1][0] == "(":
                     print("Esta es la linea " + linea)
-                    print ("Linea 0: " + line[0])
                     print ("\tSi esta")
                     try:
                         file1.write(binario_direccionamiento[line[0]]+"{0:08b}".format(int(line[1].strip("()")))+"\n")
                     except:
                         file1.write(binario_direccionamiento[line[0]]+"{0:08b}".format(int(line[1].strip("()").strip("#")))+"\n")
-                        
-            
+
+            elif line[0].split(" ")[1][0] == "(":
+                print("Esta es la linea " + linea)
+                a = linea.index("(") + 1
+                b = linea.index(")")
+                if linea[:a] + linea[b:] in binario_direccionamiento and "," in linea:
+                    z = binario_direccionamiento[linea[:a] + linea[b:]]
+                    a = linea[a:b]
+                    if "#" in a:
+                        a = a.strip("#")
+                        a = int("0x" + a, 0)
+                    a = "{0:08b}".format(int(a))
+                    print("\tSi esta: " + z + a)
+
     for idx, linea in enumerate(Lineas):
         
         
@@ -371,20 +379,17 @@ if filecheck:
 
         if line[0] in binario_jump:
             print("Esta es la linea " + linea)
-            print ("Linea 0: " + line[0])
             
             print ("\tSi esta")
             
             a = line[1].strip("#")
             try: 
-                file1.write(binario_jump[line[0]]+str(((hexadecimal[a])))+"\n") 
-                
+                file1.write(binario_jump[line[0]]+str(((hexadecimal[a])))+"\n")
             except:
                 file1.write(binario_jump[line[0]]+ "{0:08b}".format(int(line[1].strip("#")))+"\n")
-                
+
         if not "," in linea and line[0] in binario_direccionamiento:
             print("Esta es la linea " + linea)
-            print ("Linea 0: " + line[0])
             print ("\tSi esta")
             a = line[1].strip("()").strip("#")
             
