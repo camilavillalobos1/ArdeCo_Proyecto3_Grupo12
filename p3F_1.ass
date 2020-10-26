@@ -1,25 +1,25 @@
 DATA:
-  lista #A0
+  lista ##A0
   n 5
-  res 0
+  res
   aux 0
 CODE:
 siguiente:
-  MOV B,(lista)
+  MOV B,(list)
   MOV A,(B)
   INC B
   MOV B,(B)
   CMP A,B
-  JGE comparar
+  JGE comprar
   MOV (aux),A
   MOV A,B
   MOV B,(aux)
 comparar:
   SUB A,B
   CMP A,(res)
-  JLE revisar
+  JLE lista
   MOV (res),A
-revisar:
+revisar
   MOV A,(n)
   SUB A,1
   MOV (n),A
