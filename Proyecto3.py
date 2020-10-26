@@ -8,6 +8,11 @@ except IOError:
 file1 = open("datos1.txt", 'w')
 file2 = open("datos1.mem", 'w')
 
+def test():
+    a = linea.index("(") + 1
+    b = linea.index(")")
+    a = linea[a:b]
+    test_variables.append(a)
 
 Lineas = file.readlines()
 a = Lineas.index("CODE:\n")
@@ -148,12 +153,7 @@ for idx, linea in enumerate(Code):
                 try:
                     num = int(firstoperand.strip("()"), 0)
                 except:
-                    a = linea.index("(") + 1
-                    b = linea.index(")")
-                    a = linea[a:b]
-                    test_variables.append(a)
-                    # print ("Linea: ", line)
-                    # print("AQUIII  ", a)
+                    test()
                     continue            
             if num > 256:
                 print("Error en la linea {}: {} \tEl literal excede el valor aceptado.".format(idx + 1, linea))
@@ -170,10 +170,7 @@ for idx, linea in enumerate(Code):
                 try:
                     num = int(secondoperand, 0)
                 except:
-                    a = linea.index("(") + 1
-                    b = linea.index(")")
-                    a = linea[a:b]
-                    test_variables.append(a)
+                    test()
                     continue
             if num > 256:
                 print("Error en la linea {}: {} \tEl literal excede el valor aceptado.".format(idx + 1, linea))
@@ -182,12 +179,7 @@ for idx, linea in enumerate(Code):
             try:
                 num = int(secondoperand, 0)
             except:
-                a = linea.index("(") + 1
-                b = linea.index(")")
-                a = linea[a:b]
-                test_variables.append(a)
-                # print ("Linea: ", line)
-                # print("AQUIII  ", a)
+                test()
                 continue
             
                 
@@ -198,11 +190,6 @@ for idx, linea in enumerate(Code):
     if firstoperand[0] == "(" and secondoperand == "(":
         print("Error en la linea {}: {} \tError de sintaxis, {} no se acepta (Dir),(Dir).".format(idx + 1, linea,line[0]))
         filecheck = False
-
-    #if line[0] in instructions1:
-        #if line[1][0] != "(" and line[1] != "B":
-            #print("Error en la linea {}: {} \tOperacion no valida".format(idx + 1,linea,line[0]))
-            #filecheck = False
 
     if line[0][0] == "J" or line[0]== "INC" or line[0]== "RST":
         if firstoperand != "A" and firstoperand != "B" and firstoperand[0] != "(":
@@ -303,9 +290,6 @@ if filecheck:
 else:
     print("\nError: Uno o más errores encontrados a la hora de compilar")
 
-#META 2
-
-
 if filecheck:
     for idx, linea in enumerate(Code):
 
@@ -317,14 +301,11 @@ if filecheck:
         lineaa = linea.split()
         
         if linea in binario:
-            
             print("Esta es la linea " + linea)
             print("\tSi esta")
             file1.write(binario[linea] + "00000000" + "\n")
-            
 
         if linea not in binario:
-            
             if line[0] in binario_literal:
             
                 if line[1][0] != "(":
@@ -337,9 +318,7 @@ if filecheck:
                     print("Esta es la linea " + linea)
                     print ("\tSi esta")
                     try:
-                        a = linea.index("(") + 1
-                        b = linea.index(")")
-                        a = linea[a:b]
+                        test()
                         a = variables.index(a)
                         a = "{0:08b}".format(int(a))
                         print(binario_direccionamiento[line[0]]+a)
@@ -374,32 +353,24 @@ if filecheck:
                     a = linea[a:b]
                     a = variables.index(a)
                     a = "{0:08b}".format(int(a))
-                    file1.write(z + a + "\n")
-
-
+                    file1.write( z + a + "\n")
 
             if lineaa[0] in binario_jump:
                 print("Esta es la linea " + linea)
-
                 print("\tSi esta")
-
                 try:
                     a = direcciones[lineaa[1]]
                     a = "{0:08b}".format(int(a))
                     file1.write(binario_jump[lineaa[0]] + a + "\n")
                 except:
                     file1.write(binario_jump[lineaa[0]] + "{0:08b}".format(int(line[1].strip("#"))) + "\n")
-
             if not "," in linea and lineaa[0] in binario_direccionamiento:
                 print("Esta es la linea " + linea)
                 print("\tSi esta")
                 a = lineaa[1].strip("()").strip("#")
-
                 try:
                     file1.write(binario_direccionamiento[lineaa[0]] + "{0:08b}".format(
                         int(lineaa[1].strip("()").strip("#"))) + "\n")
-
-
                 except:
                     file1.write(binario_direccionamiento[lineaa[0]] + str(((hexadecimal[a]))) + "\n")
 
