@@ -1,38 +1,48 @@
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument("--file", help="Assembly file to read", default = "p3F_1.ass")
+parser.add_argument("--output", help="Output file written in binary", default = "datos")
+args = parser.parse_args()
+
 try:
-    file = open("p3F_1.ass", 'r') #Abre archivo de texto con assembly
+    file = open(args.file, 'r') #Abre archivo de texto con assembly
 except IOError:
-    print("No se encontro el archivo")
+    print("[!] No se encontro el archivo")
     exit()
 
 
-file1 = open("datos1.txt", 'w')
-file2 = open("datos1.mem", 'w')
+file1 = open(args.output+".out", 'w')
+file2 = open(args.output+".mem", 'w')
 
 def test():
     a = linea.index("(") + 1
     b = linea.index(")")
     a = linea[a:b]
     test_variables.append(a)
+    return a
 
 Lineas = file.readlines()
-a = Lineas.index("CODE:\n")
-Data = []
 Code = []
-for index, i in enumerate(Lineas):
-    if index < a:
-        Data.append(i.strip())
-    else:
-        Code.append(i.strip())
-Data.pop(0)
-Code.pop(0)
+Data = []
+if "CODE:\n" in Lineas:
+    a = Lineas.index("CODE:\n")
+    for index, i in enumerate(Lineas):
+        if index < a:
+            Data.append(i.strip())
+        else:
+            Code.append(i.strip())
+    Data.pop(0)
+    Code.pop(0)
+else:
+    Code = Lineas[:]
+
 
 instructions = ["CMP", "JEQ", "JMP","JNE", "JGT", "JLT", "JGE", "JLE", "JCR", "JOV" , "MOV", "SUB", "ADD", "AND", "OR",
                 "NOT", "XOR", "SHL", "SHR", "INC", "RST"]
 instructions1 = ["SHL", "SHR", "INC", "RST"]
 notDoubles = ["MOV", "CMP"]
-numeros = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9","#00","#01","#03","#04","#05","#06","#07","#08","#09",
-           "#0A","#0B","#0C","#0D","#0E","#0F"]
-listaMov = ["(A),B", "A,(A)", "A,A", "B,B"]
+listaMov = ["(A),B", "A,(A)", "A,A", "B,B","(B),B"]
 listaC = ["A,(B)", "B,(B)", "B,(A)"]
 
 
@@ -62,6 +72,7 @@ filecheck = True
 variables = []
 direcciones = {}
 memo = 0
+
 for i in Data:
     if " " not in i:
         filecheck = False
@@ -79,16 +90,15 @@ for i in Data:
         a = "{0:08b}".format(int(a))
         file2.write(a+"\n")
 file2.close()
-# print(Data)
-# print(Code)
-# print(variables)
 test_variables = []
+
 for idx, linea in enumerate(Code):
     line = linea.split()
     linea = linea.strip()
     if " " not in linea:
         if linea[-1] != ":":
-            print(linea," Tiene un error de escritura")
+            print("Error en la linea {}: {} \tNo se recibe parametro".format(idx + 1, linea, line[0]))
+            filecheck = False
             continue
         else:
             direcciones[linea.strip(":")] = memo
@@ -97,46 +107,96 @@ for idx, linea in enumerate(Code):
     operation = line[0]
     firstoperand = line[1]
     secondoperand = ""
+
+    try:
+        if line[0][0] != "J":
+            first = line[1].split(",")[0]
+            type(int(first))
+            print("Error en la linea {}: {} \tEl primer parametro no puede ser un literal".format(idx + 1, linea, line[0]))
+            filecheck = False
+            continue
+    except:
+        pass
     if "," in line[1]:
         firstoperand = (line[1].split(","))[0]
         secondoperand = (line[1].split(","))[1]
-
-
-    for a in numeros:  # Para que ninguna instruccion empiece con un literal
-        if line[1][0] == a and line[0][0] != "J":
-            print("Error en la linea {}: {} \tEl primer elemento no puede ser un literal".format(idx + 1, linea, line[0]))
-            filecheck = False
-            break
-
     if line[0] not in instructions:
         print("Error en la linea {}: {} \t{} no es una instruccion valida".format(idx + 1, linea, line[0]))
         filecheck = False
-
-    if (secondoperand == "" and firstoperand == "A") or (secondoperand == "" and firstoperand == "A") and operation != "INC":
-        print("Error en la linea {}: {} \t{} no es una instruccion valida".format(idx + 1, linea, line[0]))
+    elif (secondoperand == "" and firstoperand == "A"):
+        print("Error en la linea {}: {} \tInstruccion invalida".format(idx + 1, linea, line[0]))
         filecheck = False
-
-    if line[0] == "ADD" or line[0] == "SUB" or line[0] == "AND":
-        if line[1][0] == "(":
-            if line[1][1] != "A" or line[1][1] != "B":
-                if line[1][1] == "#":
-                    num = int("0x" + firstoperand.strip("()"), 0)
+    elif "," in linea:
+        if firstoperand[0] == "(" and secondoperand[0] == "(":
+            print("Error en la linea {}: {} \tNo se pueden recibir 2 direcciones.".format(idx + 1, linea, line[0]))
+            filecheck = False
+    elif line[0] in instructions: #Antes era MOV pero segun yo ninguna intruccion puede empezar con (A)
+        if (line[1].split(","))[0] == "(A)":
+           print("Error en la linea {}: {} \tEl primer elemento no puede ser (A)".format(idx + 1, linea, line[0]))
+           filecheck = False
+    if line[0] == "INC" or line[0] == "RST":
+        if firstoperand[0] != "(":
+            if line[0] == "INC" and firstoperand[0] == "B":
+                continue
+            print("Error en la linea {}: {} \tInstruccion debe recibir una direccion".format(idx + 1, linea, line[0]))
+            filecheck = False
+        else:
+            if firstoperand[1] != "B":
+                a = firstoperand.strip("()")
+                if a in variables:
+                    continue
+                try:
+                    if "#" in a:
+                        a = a.strip("#")
+                        a = int("0x" + a, 0)
+                    a = "{0:08b}".format(int(a))
+                except:
+                    print("Error en la linea {}: {} \tDebe recibir una direccion.".format(idx + 1, linea))
+                    filecheck = False
+    if operation == "NOT" or operation == "SHL" or operation == "SHR":
+        if "(" in linea:
+            a = linea.index("(") + 1
+            b = linea.index(")")
+            z = linea[:a] + linea[b:]
+            if z not in binario_direccionamiento:
+                print("Error en la linea {}: {} \tOperacion no soportada.".format(idx + 1, linea, line[0]))
+                filecheck = False
+        else:
+            if linea not in binario:
+                print("aaa")
+                filecheck = False
+    if operation == "MOV" or operation == "ADD" or operation == "SUB" or operation == "OR" or operation == "XOR" or operation == "AND":
+        if "(" not in linea:
+            try:
+                int(secondoperand)
+                continue
+            except:
+                if linea not in binario and linea not in binario_direccionamiento:
+                    print(
+                        "Error en la linea {}: {} \t{} con parametros invalidos.".format(
+                            idx + 1, linea,operation))
+                    filecheck = False
+        else:
+            if line[1] in listaMov:
+                print("Error en la linea {}: {} \tMov con parametros invalidos.".format(idx + 1, linea))
+                filecheck = False
+    if line[0] == "ADD" or line[0] == "SUB" or line[0] == "AND" or line[0] == "OR" or line[0] == "XOR":
+        if line[1][0] == "(" :
+            if secondoperand != "":
+                print("Error en la linea {}: {} \tSi se entrega una direccion no se puede recibir un segundo parametro.".format(idx + 1, linea))
+                filecheck = False
+            elif line[1][1] != "A" or line[1][1] != "B":
+                if "#" in line[1]:
+                    num = int("0x" + firstoperand.strip("(#)"), 0)
                 else:
                     num = int(firstoperand.strip("()"), 0)
                 if num > 256:
                     print("Error en la linea {}: {} \tEl literal excede el valor aceptado.".format(idx + 1, linea))
                     filecheck = False
-            if line[1][1] in numeros:
-                print("Error en la linea {}: {} \t{} (Dir), algo no es una instruccion valida".format(idx + 1, linea, line[0]))
-                filecheck = False
-            if line[1].strip("(),") in numeros and line[2] != "":
-                print("Error en la linea {}: {} \t{} (Dir), algo no es una instruccion valida".format(idx + 1, linea, line[0]))
-                filecheck = False
-            if line[1].strip("(),") == "A" or line[1].strip("(),") == "B":
-                print("Error en la linea {}: {} \t{} no acepta (A) o (B) como primer parametro".format(idx + 1, linea,line[0]))
-                filecheck = False
         else:
-            if secondoperand[0] != "(" and secondoperand != "A" and secondoperand != "B":
+            if secondoperand == "":
+                print("Error en la linea {}: {} \tInstruccion invalida.".format(idx + 1, linea))
+            elif secondoperand[0] != "(" and secondoperand != "A" and secondoperand != "B":
                 if secondoperand[0] == "#":
                     num = int("0x" + secondoperand.strip("#\n"), 0)
                 else:
@@ -147,8 +207,8 @@ for idx, linea in enumerate(Code):
 
     if line[0] == "MOV" and line[1][0] == "(":
         if line[1][1] != "A" or line[1][1] != "B":
-            if line[1][1] == "#":
-                num = int("0x" + firstoperand.strip("()"), 0)
+            if "#" in line[1]:
+                num = int("0x" + firstoperand.strip("(#)"), 0)
             else:
                 try:
                     num = int(firstoperand.strip("()"), 0)
@@ -163,6 +223,11 @@ for idx, linea in enumerate(Code):
             filecheck = False
 
     if line[0] == "MOV":
+        if "," not in linea:
+            print("Error en la linea {}: {} \tMOV debe recibir 2 parametros.".format(idx + 1, linea))
+            filecheck = False
+            continue
+
         if secondoperand[0] != "(" and secondoperand != "A" and secondoperand != "B":
             if secondoperand[0] == "#":
                 num = int("0x" + secondoperand.strip("#\n"), 0)
@@ -177,7 +242,7 @@ for idx, linea in enumerate(Code):
                 filecheck = False
         if secondoperand[0] == "(" and line[1] not in listaC:
             try:
-                num = int(secondoperand, 0)
+                num = int(secondoperand.strip("()"), 0)
             except:
                 test()
                 continue
@@ -191,10 +256,10 @@ for idx, linea in enumerate(Code):
         print("Error en la linea {}: {} \tError de sintaxis, {} no se acepta (Dir),(Dir).".format(idx + 1, linea,line[0]))
         filecheck = False
 
-    if line[0][0] == "J" or line[0]== "INC" or line[0]== "RST":
+    if line[0][0] == "J":
         if firstoperand != "A" and firstoperand != "B" and firstoperand[0] != "(":
-            if firstoperand[0] == "#":
-                num = int("0x" + firstoperand.strip("#\n"), 0)
+            if "#" in firstoperand:
+                num = int("0x" + firstoperand.strip("(#\n)"), 0)
             else:
                 try:
                     num = int(firstoperand, 0)
@@ -209,6 +274,7 @@ for idx, linea in enumerate(Code):
             print("Error en la linea {}: {} \tError de sintaxis, {} solo recibe un parametro.".format(idx + 1, linea,line[0]))
             filecheck = False
 
+
     if line[0] == "":
         if "," in line[1]:
             print("Error en la linea {}: {} \tError de sintaxis, {} solo recibe un parametro.".format(idx + 1, linea, line[0]))
@@ -219,61 +285,6 @@ for idx, linea in enumerate(Code):
             print("Error en la linea {}: {} \tOperacion no soportada".format(idx + 1, linea,line[0]))
             filecheck = False
 
-    if line[0] in instructions: #Antes era MOV pero segun yo ninguna intruccion puede empezar con (A)
-        if (line[1].split(","))[0] == "(A)":
-           print("Error en la linea {}: {} \tEl primer elemento no puede ser (A)".format(idx + 1, linea, line[0]))
-           filecheck = False
-
-    if operation == "OR":
-        if firstoperand[0] == "(":
-            if line[1][1] != "A" or line[1][1] != "B":
-                if line[1][1] == "#":
-                    num = int("0x" + firstoperand.strip("()"), 0)
-                else:
-                    num = int(firstoperand.strip("()"), 0)
-                if num > 256:
-                    print("Error en la linea {}: {} \tEl literal excede el valor aceptado.".format(idx + 1, linea))
-                    filecheck = False
-        if secondoperand[0] != "(" and secondoperand != "A" and secondoperand != "B":
-            if secondoperand[0] == "#":
-                num = int("0x" + secondoperand.strip("#\n"), 0)
-            else:
-                num = int(secondoperand, 0)
-            if num > 256:
-                print("Error en la linea {}: {} \tEl literal excede el valor aceptado.".format(idx + 1, linea))
-                filecheck = False
-        if secondoperand in listaMov or secondoperand[0] == "(A)" or firstoperand[0] == "(" and secondoperand[0] != "(" :
-            print("Error en la linea {}: {} \tOperacion no soportada.".format(idx + 1, linea, line[0]))
-            filecheck = False
-
-    if operation == "NOT":
-        if secondoperand in numeros or (firstoperand[0] == "(" and secondoperand == "") or secondoperand[0] == "(":
-            print("Error en la linea {}: {} \tOperacion no soportada.".format(idx + 1, linea, line[0]))
-            filecheck = False
-
-    if operation == "XOR":
-        if secondoperand[0] != "(" and secondoperand != "A" and secondoperand != "B":
-            if secondoperand[0] == "#":
-                num = int("0x" + secondoperand.strip("#\n"), 0)
-            else:
-                num = int(secondoperand, 0)
-            if num > 256:
-                print("Error en la linea {}: {} \tEl literal excede el valor aceptado.".format(idx + 1, linea))
-                filecheck = False
-        if line[1] in listaMov or (firstoperand[0] == "(" and secondoperand != ""):
-            print("Error en la linea {}: {} \tOperacion no soportada.".format(idx + 1, linea, line[0]))
-            filecheck = False
-
-    if operation == "SHL" or operation == "SHR":
-        if secondoperand in numeros or firstoperand == "(A)" or (firstoperand == "(B)" and secondoperand != ""):
-            print("Error en la linea {}: {} \tOperacion no soportada.".format(idx + 1, linea, line[0]))
-            filecheck = False
-        try:
-            if firstoperand[1] in numeros or secondoperand[0] == "(":
-                print("Error en la linea {}: {} \tOperacion no soportada.".format(idx + 1, linea, line[0]))
-                filecheck = False
-        except:
-            pass
 
     if operation == "CMP":
         if firstoperand[0] == "(" or secondoperand == "A" or line[1] in listaMov :
@@ -286,9 +297,9 @@ for i in test_variables:
         filecheck = False
 
 if filecheck:
-    print("\nCompilación realizada con exito\n")
+    print("\nCompilación realizada con exito.")
 else:
-    print("\nError: Uno o más errores encontrados a la hora de compilar")
+    print("\n[!] Error: Uno o más errores encontrados a la hora de compilar")
 
 if filecheck:
     for idx, linea in enumerate(Code):
@@ -301,53 +312,46 @@ if filecheck:
         lineaa = linea.split()
         
         if linea in binario:
-            print("Esta es la linea " + linea)
-            print("\tSi esta")
             file1.write(binario[linea] + "00000000" + "\n")
 
         if linea not in binario:
             if line[0] in binario_literal:
             
                 if line[1][0] != "(":
-                    print("Esta es la linea " + linea)
-                    print ("\tSi esta")
                     file1.write(binario_literal[line[0]]+"{0:08b}".format(int(line[1]))+"\n")
                     
             if line[0] in binario_direccionamiento:
                 if line[1][0] == "(":
-                    print("Esta es la linea " + linea)
-                    print ("\tSi esta")
-                    try:
-                        test()
+                    a = test()
+                    if a in variables:
                         a = variables.index(a)
                         a = "{0:08b}".format(int(a))
-                        print(binario_direccionamiento[line[0]]+a)
                         file1.write(binario_direccionamiento[line[0]]+str(a)+"\n")
-                    except:
-                        try:
-                            file1.write(binario_direccionamiento[line[0]]+"{0:08b}".format(int(line[1].strip("()")))+"\n")
-                        except:
-                            file1.write(binario_direccionamiento[line[0]]+"{0:08b}".format(int(line[1].strip("()").strip("#")))+"\n")
+                    else:
+                        a = line[1].strip("()")
+                        if "#" in a:
+                            a = a.strip("#")
+                            a = int("0x" + a, 0)
+                        a = "{0:08b}".format(int(a))
+                        file1.write(z + a + "\n")
+
 
             if line[0].split(" ")[1][0] == "(":
-                print("Esta es la linea " + linea)
                 a = linea.index("(") + 1
                 b = linea.index(")")
-                print(linea[:a] + linea[b:])
                 if linea[:a] + linea[b:] in binario_direccionamiento and "," in linea:
                     z = binario_direccionamiento[linea[:a] + linea[b:]]
                     a = linea[a:b]
                     try:
                         a = variables.index(a)
                         a = "{0:08b}".format(int(a))
-                        print(z + a)
                         file1.write(z + a + "\n")
                     except:
                         if "#" in a:
                             a = a.strip("#")
                             a = int("0x" + a, 0)
                         a = "{0:08b}".format(int(a))
-                        print("\tSi esta: " + z + a)
+                        file1.write(z+a+"\n")
                 if line[0].split(" ")[0] == "INC" and line[0].split(" ")[1] != "B":
                     z = binario_direccionamiento[linea[:a] + linea[b:]]
                     a = linea[a:b]
@@ -356,23 +360,27 @@ if filecheck:
                     file1.write( z + a + "\n")
 
             if lineaa[0] in binario_jump:
-                print("Esta es la linea " + linea)
-                print("\tSi esta")
-                try:
+                if lineaa[1] in direcciones:
                     a = direcciones[lineaa[1]]
                     a = "{0:08b}".format(int(a))
                     file1.write(binario_jump[lineaa[0]] + a + "\n")
-                except:
-                    file1.write(binario_jump[lineaa[0]] + "{0:08b}".format(int(line[1].strip("#"))) + "\n")
+                else:
+                    a = lineaa[1]
+                    if "#" in a:
+                        a = a.strip("#")
+                        a = int("0x" + a, 0)
+                    a = "{0:08b}".format(int(a))
+                    file1.write(binario_jump[lineaa[0]]+ a + "\n")
             if not "," in linea and lineaa[0] in binario_direccionamiento:
-                print("Esta es la linea " + linea)
-                print("\tSi esta")
                 a = lineaa[1].strip("()").strip("#")
                 try:
                     file1.write(binario_direccionamiento[lineaa[0]] + "{0:08b}".format(
                         int(lineaa[1].strip("()").strip("#"))) + "\n")
                 except:
                     file1.write(binario_direccionamiento[lineaa[0]] + str(((hexadecimal[a]))) + "\n")
+
+if filecheck == True:
+    print("Archivos escritos con exito.\n")
 
 file.close()
 file1.close()
