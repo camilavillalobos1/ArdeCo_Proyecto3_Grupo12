@@ -1,5 +1,19 @@
 import argparse
 
+def test():
+    a = linea.index("(") + 1
+    b = linea.index(")")
+    a = linea[a:b]
+    test_variables.append(a)
+    return a
+
+def ToBinary(a):
+    if "#" in a:
+        a = a.strip("#")
+        a = int("0x" + a, 0)
+    a = "{0:08b}".format(int(a))
+    return a
+
 parser = argparse.ArgumentParser()
 parser.add_argument("--file", help="Assembly file to read", default = "p3F_1.ass")
 parser.add_argument("--output", help="Output file written in binary", default = "datos")
@@ -11,14 +25,7 @@ except IOError:
     exit()
 file1 = open(args.output+".out", 'w')
 file2 = open(args.output+".mem", 'w')
-def test():
-    a = linea.index("(") + 1
-    b = linea.index(")")
-    a = linea[a:b]
-    test_variables.append(a)
-    if a not in variables:
-        print ("Error")
-    return a
+
 Lineas = file.readlines()
 Code = []
 Data = []
@@ -67,11 +74,9 @@ for i in Data:
         if a.count("#") > 1:
             print("Error en la linea: " + i[0]+ " " + i[1] + "\n" + i[1] + " No es una direccion valida")
             continue
-        elif "#" in a:
-            a = a.strip("#")
-            a = int("0x" + a, 0)
-        a = "{0:08b}".format(int(a))
-        file2.write(a+"\n")
+        else:
+            a = ToBinary(a)
+            file2.write(a+"\n")
 file2.close()
 test_variables = []
 
@@ -129,10 +134,7 @@ for idx, linea in enumerate(Code):
                 if a in variables:
                     continue
                 try:
-                    if "#" in a:
-                        a = a.strip("#")
-                        a = int("0x" + a, 0)
-                    a = "{0:08b}".format(int(a))
+                   a = ToBinary(a)
                 except:
                     print("Error en la linea {}: {} \tDebe recibir una direccion.".format(idx + 1, linea))
                     filecheck = False
@@ -146,7 +148,7 @@ for idx, linea in enumerate(Code):
                 filecheck = False
         else:
             if linea not in binario:
-                print("aaa")
+                print("Error en la linea {}: {} \tOperacion no soportada.".format(idx + 1, linea, line[0]))
                 filecheck = False
     if operation == "MOV" or operation == "ADD" or operation == "SUB" or operation == "OR" or operation == "XOR" or operation == "AND":
         if "(" not in linea:
@@ -309,10 +311,7 @@ if filecheck:
                         file1.write(binario_direccionamiento[line[0]]+str(a)+"\n")
                     else:
                         a = line[1].strip("()")
-                        if "#" in a:
-                            a = a.strip("#")
-                            a = int("0x" + a, 0)
-                        a = "{0:08b}".format(int(a))
+                        a = ToBinary(a)
                         file1.write(z + a + "\n")
 
 
@@ -327,10 +326,7 @@ if filecheck:
                         a = "{0:08b}".format(int(a))
                         file1.write(z + a + "\n")
                     except:
-                        if "#" in a:
-                            a = a.strip("#")
-                            a = int("0x" + a, 0)
-                        a = "{0:08b}".format(int(a))
+                        a = ToBinary(a)
                         file1.write(z+a+"\n")
                 if line[0].split(" ")[0] == "INC" and line[0].split(" ")[1] != "B":
                     z = binario_direccionamiento[linea[:a] + linea[b:]]
@@ -346,10 +342,7 @@ if filecheck:
                     file1.write(binario_jump[lineaa[0]] + a + "\n")
                 else:
                     a = lineaa[1]
-                    if "#" in a:
-                        a = a.strip("#")
-                        a = int("0x" + a, 0)
-                    a = "{0:08b}".format(int(a))
+                    a = ToBinary(a)
                     file1.write(binario_jump[lineaa[0]]+ a + "\n")
             if not "," in linea and lineaa[0] in binario_direccionamiento:
                 a = lineaa[1].strip("()").strip("#")
